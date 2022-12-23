@@ -4,7 +4,7 @@ check_android_task:
     API_LEVEL: 32
     TARGET: google_apis
     ARCH: x86
-	CC_TEST_REPORTER_ID: ENCRYPTED[!d5639e97f3e21ebe9f855c7f0fdbd38c6f04e81819e5e9b4208e948494b8ac53e90c3d77db1e8b52b257a3affea4772a!]
+    CC_TEST_REPORTER_ID: ENCRYPTED[!d5639e97f3e21ebe9f855c7f0fdbd38c6f04e81819e5e9b4208e948494b8ac53e90c3d77db1e8b52b257a3affea4772a!]
   container:
     image: reactivecircus/android-emulator-$API_LEVEL:latest
     kvm: true
