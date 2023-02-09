@@ -1,0 +1,6 @@
+
+//TODO : everything
+class EntryAdderWidget {
+
+
+}
