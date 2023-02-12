@@ -2,12 +2,12 @@ import 'package:test/test.dart';
 import 'package:monedit_flutter/entry.dart';
 import 'package:monedit_flutter/entry_manager.dart';
 
-void main(){
+void main() async {
 
   EntryManager em = EntryManager();
   DateTime now = DateTime.now();
 
-  test("Entry : creation as expected", (){
+  test("Entry : creation as expected", () async {
     Entry e = Entry(0,now,"ad",2,"po");
     expect(e.id, equals(0));
     expect(e.date, equals(1));
@@ -16,10 +16,10 @@ void main(){
     expect(e.category, equals("po"));
   });
 
-  test("Entry Builder : ",(){
+  test("Entry Builder : ",() async {
     EntryBuilder eb = EntryBuilder();
     Entry e1 = Entry(0,now,"ad",2,"po");
-    Entry e2 = eb.setDate(now)
+    Entry e2 = await eb.setDate(now)
         .setName("ad")
         .setValue(2)
         .setCategory("po")

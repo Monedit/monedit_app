@@ -1,3 +1,5 @@
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'entry.dart';
 import 'filter.dart';
 import 'monedit_database.dart';
@@ -5,10 +7,16 @@ import 'monedit_database.dart';
 class EntryManager{
 
   final _db = MoneditDatabase.get();
-  int _lastId = 0; //This needs to be stored somewhere in a file : how to?
+  static late int _lastId; //This needs to be stored somewhere in a file : how to?
+  static final _prefs = SharedPreferences.getInstance();
 
-  EntryManager(){
-    //lastId shenanigans
+  static Future<EntryManager> get() async {
+    EntryManager em = EntryManager();
+
+  // Try reading data from the lasId key. If it doesn't exist, return 0.
+    _lastId = (await _prefs).getInt('lastId') ?? 0;
+
+    return em;
   }
 
   Future<void> add(Entry e) async {
@@ -24,7 +32,8 @@ class EntryManager{
     return (await _db).fetchEntries(f);
   }
 
-  int newId(){
+  Future<int> newId() async {
+    (await _prefs).setInt('lastId',_lastId+1);
     return _lastId++;
   }
 

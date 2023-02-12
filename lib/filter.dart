@@ -1,32 +1,52 @@
 import 'package:tuple/tuple.dart';
-import 'entry.dart';
 
 class Filter{
 
   //TODO : change types
   String? nameFilter;
-  Tuple2<int,int>? valueFilter;
-  Tuple2<DateTime,DateTime>? dateFilter;
+  Tuple2<int,int?>? valueFilter;
+  Tuple2<DateTime,DateTime?>? dateFilter;
   String? categoryFilter;
 
-  bool inFilter(Entry e){ //TODO : useful?
-    if(nameFilter != null && e.name == nameFilter){
-      return true;
-    }
-    if(valueFilter != null && e.value >= valueFilter!.item1 && e.value <= valueFilter!.item2) {
-      return true;
-    }
-    if(dateFilter != null && e.date.isAfter(dateFilter!.item1)  && e.date.isBefore(dateFilter!.item2)){
-      return true;
-    }
-    if(categoryFilter != null && e.category == categoryFilter){
-      return true;
-    }
-    return false;
-  }
+  Tuple2<String,List<Object?>> makeQuery(){ //TODO : modularize strings query section
+    List<Object?> whereArgs = [];
+    String where = '';
 
-  String makeQuery(){ //TODO
-    return "";
+    if(nameFilter != null){ //TODO : this could be a function
+      where += "name LIKE '%?%' AND";
+      whereArgs.add(nameFilter);
+    }
+    if(categoryFilter != null){
+      where += "category LIKE '%?%' AND";
+      whereArgs.add(categoryFilter);
+    }
+    if(valueFilter != null){//TODO : this could be a function
+      if(valueFilter!.item2 != null){
+        where += "value BETWEEN ? AND ?  AND";
+        whereArgs.addAll([valueFilter!.item1,valueFilter!.item2!]);
+        //return here in the function
+      }else{//get rid of this
+        where += "value = ? AND";
+        whereArgs.add(valueFilter!.item1);
+        //return here in the function
+      }
+
+    }
+
+    if(dateFilter != null){//TODO : this could be a function
+      if(dateFilter!.item2 != null){
+        where += "date BETWEEN ? AND ? ";
+        whereArgs.addAll([dateFilter!.item1,dateFilter!.item2!]);
+        //return here in the function
+      }else{//get rid of this
+        where += "date = ?";
+        whereArgs.add(dateFilter!.item1);
+        //return here in the function
+      }
+
+    }
+
+    return Tuple2(where, whereArgs);
   }
 
 }

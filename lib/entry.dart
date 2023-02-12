@@ -2,11 +2,11 @@
 
 import 'package:monedit_flutter/entry_manager.dart';
 
-class Entry{ //TODO : change types
+class Entry{ //TODO : change types + order attributes and functions consistently (also in the DB)
   final int id;
   final DateTime date;
   final String name;
-  final int value;
+  final double value;
   final String category; //TODO : should Category be a class?
 
   Entry(this.id, this.date, this.name, this.value, this.category);
@@ -16,7 +16,21 @@ class Entry{ //TODO : change types
   }
 
   Map<String, Object?> toMap(){
-    return {};
+    return {
+      'id' : id,
+      'date' : date.toIso8601String(),
+      'name' : name,
+      'value' : value,
+      'category' : category
+    };
+  }
+  static Entry? fromMap(){ //TODO : make non-nullable and content
+    return null;
+  }
+
+  @override
+  String toString(){
+    return "Entry #'$id' : '$name' at '$date' of '$category', value : '$value' ";
   }
 
 }
@@ -25,12 +39,12 @@ class EntryBuilder {
 
   DateTime? date = DateTime.now(); //Default value could be "TODAY"
   String? name= "";
-  int? value = 0;
+  double? value = 0;
   String? category; //Default category could be None or ""
 
-  Entry build(EntryManager manager) {
+  Future<Entry> build(EntryManager manager) async{
     //TODO : do extra steps , eg : if name is empty or null use #ID as the name
-    int idToUse = manager.newId();
+    int idToUse = await manager.newId();
     name ??= idToUse.toString(); //??= if null then this
     category ??= "";
     date ??= DateTime.now(); //Should be today
@@ -49,7 +63,7 @@ class EntryBuilder {
     name = toSet;
     return this;
   }
-  EntryBuilder setValue(int toSet){
+  EntryBuilder setValue(double toSet){
     value = toSet;
     return this;
   }
