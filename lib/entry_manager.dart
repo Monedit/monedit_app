@@ -4,11 +4,12 @@ import 'entry.dart';
 import 'filter.dart';
 import 'monedit_database.dart';
 
-class EntryManager{
+class EntryManager{//TODO : should be a singleton
 
   final _db = MoneditDatabase.get();
   static late int _lastId; //This needs to be stored somewhere in a file : how to?
   static final _prefs = SharedPreferences.getInstance();
+  //TODO : write-through cache for entries
 
   static Future<EntryManager> get() async {
     EntryManager em = EntryManager();

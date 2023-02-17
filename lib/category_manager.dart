@@ -1,0 +1,3 @@
+class CategoryManager{
+  //TODO : ???
+}

@@ -48,6 +48,7 @@ class EntryBuilder {
     name ??= idToUse.toString(); //??= if null then this
     category ??= "";
     date ??= DateTime.now(); //Should be today
+    //TODO : check value is not null : should be done in manager
     return Entry(idToUse, date!, name!, value!, category!);
   }
 

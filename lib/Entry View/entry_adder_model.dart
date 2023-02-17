@@ -9,8 +9,13 @@ class EntryAdderModel{
   Future<EntryManager> em = EntryManager.get();
 
   void add() async{
-    (await em).add(await eb.build(await em));
-    //TODO : update widget -> reset or exit adder
+    if(eb.isValid()){
+      (await em).add(await eb.build(await em));
+      return;
+      //TODO : update widget -> reset or exit adder
+    }
+
+    //TODO : notify the value must be set
   }
 
   void nameChange(String newName){
