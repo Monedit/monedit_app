@@ -52,7 +52,7 @@ class _QuickViewWidgetState extends State<QuickViewWidget>{
                   ListTile( //Entry widget should be a Card with a ListTile
                     title: Text("REPLACE BY ENTRY INFO"),
                     subtitle: Text("yay more details"),
-                    isThreeLine: true,
+                    //isThreeLine: true,
                     //onTap: ,
                     //onLongPress: ,
                   ),
