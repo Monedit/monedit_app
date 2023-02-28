@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:monedit_flutter/filter.dart';
-import 'package:monedit_flutter/entry.dart';
+import 'package:monedit_flutter/Entry/entry.dart';
 import 'package:monedit_flutter/monedit_database.dart';
 
 void main() async{

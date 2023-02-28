@@ -1,12 +1,17 @@
 import 'package:monedit_flutter/monedit_database.dart';
 
 import 'budget.dart';
-import 'entry.dart';
+import 'Entry/entry.dart';
 
 class BudgetManager{ //TODO : should be a singleton
 
   final _db = MoneditDatabase.get();
   //TODO : write-through cache for budgets
+
+  static Future<BudgetManager> get() async{
+    var bm = BudgetManager();
+    return bm;
+  }
 
   void add(Budget b) async{
     //add budget to DB + update last used date
@@ -45,7 +50,7 @@ class BudgetManager{ //TODO : should be a singleton
     return (await _db).fetchBudgetNames();
   }
 
-  Future<List<String>> findNamesLRU(int size) async{
+  Future<List<String>> findNamesLRU(int size) async{ //TODO : find with only one method with optional parameters
     return (await findAllNames()).sublist(0,size-1);
   }
 

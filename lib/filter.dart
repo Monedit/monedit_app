@@ -3,12 +3,14 @@ import 'package:tuple/tuple.dart';
 class Filter{
 
   //TODO : change types
-  String? nameFilter;
-  Tuple2<int,int?>? valueFilter;
-  Tuple2<DateTime,DateTime?>? dateFilter;
-  String? categoryFilter;
+  final String? nameFilter;
+  final Tuple2<int,int?>? valueFilter;
+  final Tuple2<DateTime,DateTime?>? dateFilter;
+  final String? categoryFilter;
 
-  Tuple2<String,List<Object?>> makeQuery(){ //TODO : modularize strings query section
+  const Filter( {this.nameFilter, this.valueFilter, this.dateFilter, this.categoryFilter} );
+
+  Tuple2<String?,List<Object?>?> makeQuery(){ //TODO : modularize strings query section
     List<Object?> whereArgs = [];
     String where = '';
 
@@ -45,8 +47,11 @@ class Filter{
       }
 
     }
-
+    if(where == ''){
+      return const Tuple2(null, null);
+    }
     return Tuple2(where, whereArgs);
+
   }
 
 }

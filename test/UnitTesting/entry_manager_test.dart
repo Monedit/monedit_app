@@ -1,7 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:test/test.dart';
-import 'package:monedit_flutter/entry.dart';
-import 'package:monedit_flutter/entry_manager.dart';
+import 'package:monedit_flutter/Entry/entry.dart';
+import 'package:monedit_flutter/Entry/entry_manager.dart';
 
 void main(){
 

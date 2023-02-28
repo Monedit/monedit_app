@@ -1,19 +1,20 @@
 
 //TODO : everything
-import 'package:monedit_flutter/entry.dart';
-import 'package:monedit_flutter/entry_manager.dart';
+import 'package:monedit_flutter/Entry/entry.dart';
+import 'package:monedit_flutter/Entry/entry_manager.dart';
 
 class EntryAdderModel{
 
   EntryBuilder eb = EntryBuilder();
   Future<EntryManager> em = EntryManager.get();
 
-  void add() async{
+  Future<bool> add() async{
     if(eb.isValid()){
       (await em).add(await eb.build(await em));
-      return;
+      return true;
       //TODO : update widget -> reset or exit adder
     }
+    return false;
 
     //TODO : notify the value must be set
   }

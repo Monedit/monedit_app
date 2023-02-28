@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.github.monedit.app.monedit_flutter">
+    <uses-permission android:name="android.permission.STORAGE" />
    <application
         android:label="monedit_flutter"
         android:name="${applicationName}"

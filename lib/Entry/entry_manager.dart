@@ -1,8 +1,8 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'entry.dart';
-import 'filter.dart';
-import 'monedit_database.dart';
+import '../Entry/entry.dart';
+import '../filter.dart';
+import '../monedit_database.dart';
 
 class EntryManager{//TODO : should be a singleton
 
@@ -29,13 +29,17 @@ class EntryManager{//TODO : should be a singleton
   }
 
   //TODO : change return type AND do it cleaner with queries
-  Future<List<Entry>> find(Filter f) async {
-    return (await _db).fetchEntries(f);
+  Future<List<Entry>> find({Filter f = const Filter(), int size = 0}) async {
+    if(size == 0){
+      return (_db).then((db) => db.fetchEntries(f));
+    }
+    return _db.then((db) => db.fetchEntriesBySize(f,size));
   }
 
   Future<int> newId() async {
-    (await _prefs).setInt('lastId',_lastId+1);
-    return _lastId++;
+    _lastId = _lastId +1;
+    (await _prefs).setInt('lastId',_lastId);
+    return _lastId;
   }
 
 }

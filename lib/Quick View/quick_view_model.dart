@@ -1,32 +1,48 @@
+import 'package:monedit_flutter/category_manager.dart';
+import 'package:tuple/tuple.dart';
+
 import '../budget.dart';
-import '../entry.dart';
-import '../entry_manager.dart';
+import '../Entry/entry.dart';
+import '../Entry/entry_manager.dart';
+import '../budget_manager.dart';
 
 class QuickViewModel{
 
-  Future<EntryManager> em = EntryManager.get();
-  //TODO : Budget Manager
+  final Future<EntryManager> _em = EntryManager.get();
+  final Future<BudgetManager> _bm = BudgetManager.get();
+  final CategoryManager _cm = CategoryManager();
 
-  void prevBudget(){
+  List<Entry> viewEntries = [];
+  List<Budget> viewBudgets = [];
 
-  }
+  var numberEntries = 10;
+  var numberBudgets = 3;
 
-  void nextBudget(){
+  var currentBudgetIndex = 0;
 
-  }
-
-  Budget getBudget(){
-    return Budget("",0,[],DateTime.now());
-  }
-
-  List<Entry> lastEntries(){
-    return [];
+  Future<void> getViewData() async{
+    viewEntries = await _em.then((em) => em.find(size : numberEntries));
+    viewBudgets = await _bm.then((bm) => bm.findLRU(numberBudgets));
   }
 
   //TODO : List<Event> NextEvents()
 
-  void quickAddButton(){
+  Future<void> quickAddButton() async{
+    EntryBuilder dummyEntry = EntryBuilder().setName("Name").setValue(0.0).setDate(DateTime.now());
+    await _em.then((em) async => em.add(await dummyEntry.build(em)));
+  }
 
+  Budget currentBudget(){
+    if(viewBudgets.isEmpty){
+      return Budget("Example Budget",0.0,[],DateTime.now());
+    }
+
+    return viewBudgets[currentBudgetIndex];
+  }
+
+  void budgetSwipe(double primaryVelocity){
+    currentBudgetIndex = (currentBudgetIndex + (primaryVelocity > 0 ? -1 : 1 ) )%numberBudgets;
+    print("SWIPE");
   }
 
 }

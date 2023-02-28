@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'Entry View/entry_adder_widget.dart';
 import 'Quick View/quick_view_widget.dart';
 
 void main() {
@@ -27,14 +28,11 @@ class MyStatefulWidget extends StatefulWidget {
 }
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static const List<Widget> _widgetOptions = <Widget>[ //Here put the 3 custom widgets for entries, quick view, stats
-    Text(
-      'Index 0: Entries',
-      style: optionStyle,
-    ),
+    EntryAdderWidget(),
     QuickViewWidget(),
     Text(
       'Index 2: Stats',

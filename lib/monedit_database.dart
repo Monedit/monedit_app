@@ -2,13 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'budget.dart';
-import 'entry.dart';
+import 'Entry/entry.dart';
 import 'filter.dart';
 
 class MoneditDatabase{ //TODO : Singleton correctly
 
   static const String _nameDb = "monedit.db";
-  static late final Database? _database;
+  static Database? _database;
 
   //TODO : make a cache here
 
@@ -20,17 +20,16 @@ class MoneditDatabase{ //TODO : Singleton correctly
     //open the DB if it is not open already
     _database ??= await openDatabase(
         join(await getDatabasesPath(), _nameDb),
-        onCreate: (db, version) {
+        onCreate: (db, version) async {
           // Run the CREATE TABLE statement on the database.
           //TODO : check if not null is needed
-          return db.execute(
-            'CREATE TABLE entries(id INTEGER PRIMARY KEY, name TEXT, date TEXT, value REAL, category TEXT );'
-             'CREATE TABLE budgets(name TEXT PRIMARY KEY, balance REAL, lastUse TEXT)'
-            ,
+          db.execute('CREATE TABLE budgets(name TEXT PRIMARY KEY, balance REAL, lastUse TEXT)');
+          db.execute('CREATE TABLE entries(id INTEGER PRIMARY KEY, name TEXT, date TEXT, value REAL, category TEXT )');
+          print("ON CREATE DB EXECUTED");
             //TODO : will need to add more things into the DB
             //-> budgets (+ last use date? To order by LRU) and their lists
             //-> categories (names)
-          );
+
         },
         // Set the version. This executes the onCreate function and provides a
         // path to perform database upgrades and downgrades.
@@ -61,14 +60,24 @@ class MoneditDatabase{ //TODO : Singleton correctly
 
   Future<List<Entry>> fetchEntries(Filter f) async{ //TODO : how to use filters for fetching?
     var fRes = f.makeQuery();
-    var entries = (await _database!.query('entries',
+    var entries =  _database!.query('entries',
       where : fRes.item1,
-      whereArgs : fRes.item2
-    )).map((entryMap) =>
-        Entry(entryMap['id'] as int, DateTime.parse(entryMap['date'] as String), entryMap['name'] as String, entryMap['value'] as double, entryMap['category'] as String) ).toList();
+      whereArgs : fRes.item2,
+      orderBy: 'id DESC',
 
+    ).then((entriesMaps) => entriesMaps.map((entryMap) =>
+        Entry(entryMap['id'] as int, DateTime.parse(entryMap['date'] as String), entryMap['name'] as String, entryMap['value'] as double, entryMap['category'] as String) ).toList()
+    );
     return entries;
     
+  }
+  //TODO : fetch entries by size!
+  Future<List<Entry>> fetchEntriesBySize(Filter f, int size) async{ //TODO : how to use filters for fetching?
+    if(size == 0){
+      return [];
+    }
+    var entries = fetchEntries(f).then((ls) => ls.isEmpty ? ls.sublist(0) : ls.sublist(0, ls.length < size ? ls.length : size  ));
+    return entries;
   }
 
   void addBudget(List<Budget> budgets) async{
@@ -111,7 +120,10 @@ class MoneditDatabase{ //TODO : Singleton correctly
   }
 
   Future<List<Budget>> fetchBudgetsByNames(List<String> names) async{
-    //TODO :
+    if(names.isEmpty){
+      return [];
+    }
+    //TODO : check if we can get rid of the awaits by combining futures
     String namesForQuery = '(${names.reduce((queryAccumulator, newName) =>
     '$queryAccumulator , $newName')})'; //TODO : make list of names for query correctly
     var budgetMaps = await _database!.query('budgets',
@@ -122,9 +134,12 @@ class MoneditDatabase{ //TODO : Singleton correctly
     );
 
     var budgetIds = names.map(
-            (name) async =>  (await _database!.query('budget_$name'))
-                .map((idMap) => idMap['id'] as int).toList()
+            (name)  =>   _database!.query('budget_$name').then((idMaps) => idMaps.map((idMap) => idMap['id'] as int).toList())
     ).toList();
+
+    Future<List<int>> nameToIds(name) => (
+        _database!.query('budget_$name').then((idMaps) => idMaps.map((idMap) => idMap['id'] as int).toList())
+    );
 
     var budgets = [
       for (int index = 0 ; index < names.length ; ++index)
@@ -137,16 +152,26 @@ class MoneditDatabase{ //TODO : Singleton correctly
   }
 
   Future<List<Budget>> fetchBudgetsBySize(int size) async{
+    if(size == 0){
+      return [];
+    }
     //TODO : change to order by LRU + probably better if done in a specific query
-    var names = (await fetchBudgetNames()).sublist(0,size-1);
-    return (await fetchBudgetsByNames(names));
+    var names =  fetchBudgetNames().then((names) =>
+    names.isEmpty ? names.sublist(0) : names.sublist(0, names.length < size ? names.length : size)).then((namesBySize) => fetchBudgetsByNames(namesBySize));
+    return names;
   }
 
   Future<List<String>> fetchBudgetNames() async{
     //TODO : change to order by LRU
-    var budgetNames = (await _database!.query('budgets', orderBy: 'lastUse' ))
-        .map((budgetMap) => budgetMap['name'] as String).toList();
+
+    var budgetNames = _database!.query('budgets',  ).then((budgets) => budgets.map((budgetMap) => budgetMap['name'] as String).toList());
     return budgetNames;
+  }
+
+  Future<void> deleteDB() async{
+    databaseFactory.deleteDatabase( "${await getDatabasesPath()}/$_nameDb");
+    _database = null;
+    get();
   }
 
 }

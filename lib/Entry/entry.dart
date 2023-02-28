@@ -1,6 +1,6 @@
 
 
-import 'package:monedit_flutter/entry_manager.dart';
+import 'package:monedit_flutter/Entry/entry_manager.dart';
 
 class Entry{ //TODO : change types + order attributes and functions consistently (also in the DB)
   final int id;
@@ -38,22 +38,22 @@ class Entry{ //TODO : change types + order attributes and functions consistently
 class EntryBuilder {
 
   DateTime? date = DateTime.now(); //Default value could be "TODAY"
-  String? name= "";
-  double? value = 0;
-  String? category; //Default category could be None or ""
+  String? name ;
+  double? value = 0.0;
+  String? category = "None"; //Default category could be None or ""
 
   Future<Entry> build(EntryManager manager) async{
     //TODO : do extra steps , eg : if name is empty or null use #ID as the name
     int idToUse = await manager.newId();
-    name ??= idToUse.toString(); //??= if null then this
-    category ??= "";
+    name = (name == null || name!.isEmpty) ? idToUse.toString() : name; //??= if null then this
+    category ??= "None";
     date ??= DateTime.now(); //Should be today
     //TODO : check value is not null : should be done in manager
     return Entry(idToUse, date!, name!, value!, category!);
   }
 
   bool isValid(){
-    return value != null;
+    return value != null && value != 0.0;
   }
 
   EntryBuilder setDate(DateTime toSet){

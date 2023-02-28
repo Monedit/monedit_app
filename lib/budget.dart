@@ -1,5 +1,5 @@
 
-import 'entry.dart';
+import 'Entry/entry.dart';
 
 class Budget{ //This budget has no warning point for the balance
   final String name;
