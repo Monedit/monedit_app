@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:monedit_flutter/Entry%20View/entry_adder_model.dart';
+import 'package:monedit_flutter/category_manager.dart';
 
 class EntryAdderWidget extends StatefulWidget {
 
@@ -94,7 +95,7 @@ class _EntryAdderWidgetState extends State<EntryAdderWidget>{
           inputFormatters: [
             FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
           ],
-          initialValue : model.eb.value.toString(),
+          //initialValue : model.eb.value.toString(),
           validator: (String? value) {
             if (value == null || value.isEmpty) {
               return 'Please enter some text';
@@ -102,21 +103,13 @@ class _EntryAdderWidgetState extends State<EntryAdderWidget>{
             return null;
           },
         ),
-        TextFormField(
-          decoration: const InputDecoration( //DropDown selector
-            hintText: 'Entry category',
-          ),
-          initialValue : model.eb.category.toString(),
-          onChanged: (value){
-            model.categoryChange(value);
-            setState(() {});
-          },
-          validator: (String? value) {
-            if (value == null || value.isEmpty) {
-              return 'Please enter some text';
-            }
-            return null;
-          },
+        DropdownButton(
+            items: CategoryManager.nameToIconTable.keys.toList().map((str) => DropdownMenuItem(value : str, child: Text(str))).toList(), //TODO : Make the Category show logo and text
+            onChanged: (String? selected){
+              model.categoryChange(selected!);
+              setState(() {});
+            },
+            value: model.eb.category,
         ),
         FloatingActionButton.extended(
           onPressed: () async {
