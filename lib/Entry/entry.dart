@@ -1,5 +1,3 @@
-
-
 import 'package:monedit_flutter/Entry/entry_manager.dart';
 
 class Entry{ //TODO : change types + order attributes and functions consistently (also in the DB)
@@ -75,5 +73,3 @@ class EntryBuilder {
 
 
 }
-
-

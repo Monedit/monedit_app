@@ -1,3 +1,6 @@
+import 'package:flutter/cupertino.dart';
+import 'package:monedit_flutter/Entry%20View/entry_adder_model.dart';
+import 'package:monedit_flutter/Quick%20View/quick_view_widget.dart';
 import 'package:monedit_flutter/category_manager.dart';
 import 'package:tuple/tuple.dart';
 
@@ -7,6 +10,10 @@ import '../Entry/entry_manager.dart';
 import '../budget_manager.dart';
 
 class QuickViewModel{
+
+  QuickViewModel(this.viewState);
+
+  State viewState;
 
   final Future<EntryManager> _em = EntryManager.get();
   final Future<BudgetManager> _bm = BudgetManager.get();
@@ -20,16 +27,28 @@ class QuickViewModel{
 
   var currentBudgetIndex = 0;
 
+  var adding = false;
+  var adderModel = EntryAdderModel();
+
+  var detailedBudgetView = false;
+
   Future<void> getViewData() async{
     viewEntries = await _em.then((em) => em.find(size : numberEntries));
-    viewBudgets = await _bm.then((bm) => bm.findLRU(numberBudgets));
+    viewBudgets = await _bm.then((bm) => bm.findTimelyBudgets());
   }
 
   //TODO : List<Event> NextEvents()
 
   Future<void> quickAddButton() async{
-    EntryBuilder dummyEntry = EntryBuilder().setName("Name").setValue(0.0).setDate(DateTime.now());
-    await _em.then((em) async => em.add(await dummyEntry.build(em)));
+    adderModel = EntryAdderModel();
+    adding = true;
+  }
+
+  Future<void> adderFinished() async{
+    await getViewData();
+    adderModel = EntryAdderModel();
+    adding = false;
+    viewState.setState(() {});
   }
 
   Budget currentBudget(){
@@ -42,7 +61,6 @@ class QuickViewModel{
 
   void budgetSwipe(double primaryVelocity){
     currentBudgetIndex = (currentBudgetIndex + (primaryVelocity > 0 ? -1 : 1 ) )%numberBudgets;
-    print("SWIPE");
   }
 
 }

@@ -58,6 +58,17 @@ class MoneditDatabase{ //TODO : Singleton correctly
 
   }
 
+  Future<List<Entry>> fetchEntriesById(List<int> ids) async{ //TODO : how to use filters for fetching?
+    String querySet = ids.toString().replaceFirst('[', '(').replaceFirst(']', ')');
+    var entries =  _database!.query('entries',
+      where : 'id in $querySet',
+    ).then((entriesMaps) => entriesMaps.map((entryMap) =>
+        Entry(entryMap['id'] as int, DateTime.parse(entryMap['date'] as String), entryMap['name'] as String, entryMap['value'] as double, entryMap['category'] as String) ).toList()
+    );
+    return entries;
+
+  }
+
   Future<List<Entry>> fetchEntries(Filter f) async{ //TODO : how to use filters for fetching?
     var fRes = f.makeQuery();
     var entries =  _database!.query('entries',
@@ -71,6 +82,7 @@ class MoneditDatabase{ //TODO : Singleton correctly
     return entries;
     
   }
+
   //TODO : fetch entries by size!
   Future<List<Entry>> fetchEntriesBySize(Filter f, int size) async{ //TODO : how to use filters for fetching?
     if(size == 0){

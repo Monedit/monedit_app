@@ -1,7 +1,9 @@
 import 'package:monedit_flutter/monedit_database.dart';
+import 'package:tuple/tuple.dart';
 
 import 'budget.dart';
 import 'Entry/entry.dart';
+import 'filter.dart';
 
 class BudgetManager{ //TODO : should be a singleton
 
@@ -57,6 +59,36 @@ class BudgetManager{ //TODO : should be a singleton
   Future<bool> isValidName(BudgetBuilder bb) async{
     //check name does not exist
     return !(await (await _db).fetchBudgetNames()).contains(bb.name);
+  }
+
+  Future<List<Budget>> findTimelyBudgets() async{
+
+    List<BudgetBuilder> bbs = [BudgetBuilder().setName("Day"), BudgetBuilder().setName("Week"), BudgetBuilder().setName("Month")];
+    List<Budget> budgets = bbs.map((e) => e.build()).toList();
+
+    DateTime now = DateTime.now();
+    //TODO : testing to see if it is functional
+    DateTime daily = DateTime( now.year, now.month, now.day );
+    Duration oneDay = const Duration( days: 1);
+    Duration oneWeek = const Duration( days: 7);
+    Duration oneMonth = const Duration( days : 30);
+
+    List<Filter> filters = [
+      Filter(dateFilter: Tuple2( daily , daily.add(oneDay) ) ) ,
+      Filter(dateFilter: Tuple2( daily.subtract(oneWeek) , daily.add(oneDay) ) ) ,
+      Filter(dateFilter: Tuple2( daily.subtract(oneMonth) , daily.add(oneDay) ) ) ];
+
+    var i = 0;
+    for (var b in budgets) {
+        List<Entry> entries = await (await _db).fetchEntries(filters[i]);
+        for(var entry in entries){
+          b.add(entry);
+          b.balance += entry.value;
+        }
+        ++i;
+    }
+
+    return budgets;
   }
 
 }

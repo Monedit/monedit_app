@@ -47,7 +47,8 @@ class _EntryAdderWidgetState extends State<EntryAdderWidget>{
   @override
   Widget build(BuildContext context) {
 
-    return Column(
+    return
+      Column(
       children: [
         TextFormField(
           decoration: const InputDecoration(
@@ -115,6 +116,7 @@ class _EntryAdderWidgetState extends State<EntryAdderWidget>{
           onPressed: () async {
               print(await model.add());
               setState(() {});
+              //TODO : need to go back to previous view
           },
           label : const Text("Add Entry"),
           backgroundColor: Colors.green,

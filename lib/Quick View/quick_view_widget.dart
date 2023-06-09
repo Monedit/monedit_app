@@ -1,6 +1,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:monedit_flutter/Entry%20View/entry_adder_quickview_view.dart';
 import 'package:monedit_flutter/Entry/entry.dart';
 import 'package:monedit_flutter/Entry/entry_list_tile.dart';
 import 'package:monedit_flutter/Quick%20View/quick_view_model.dart';
@@ -13,7 +14,6 @@ import '../budget.dart';
 
 class QuickViewWidget extends StatefulWidget{
 
-
   @override
   State<QuickViewWidget> createState() {
     return _QuickViewWidgetState();
@@ -24,12 +24,12 @@ class QuickViewWidget extends StatefulWidget{
 
 class _QuickViewWidgetState extends State<QuickViewWidget>{
 
- // var mdb = MoneditDatabase.get().then((db) => Tuple2(db.fetchEntries(Filter()), db.fetchBudgetsBySize(3)));
+ // var mdb = MoneditDatabae.get().then((db) => Tuple2(db.fetchEntries(Filter()), db.fetchBudgetsBySize(3)));
   //TODO : this should be an entry manager and a budget manager NOT the DB
  // var mdb = MoneditDatabase.get().then( (db) async => Tuple2(await db.fetchEntriesBySize(10), await db.fetchBudgetsBySize(3))  );
   //TODO : make 1 Future who has all the content that is needed -> load everything once all at a time
 
-  QuickViewModel model = QuickViewModel();
+  late QuickViewModel model = QuickViewModel(this);
   late Future<void> modelData =  model.getViewData();
 
   Widget budgetSelector(int index){
@@ -63,51 +63,93 @@ class _QuickViewWidgetState extends State<QuickViewWidget>{
 
           return Stack(
             children: [
-              Padding(
-                  padding : const EdgeInsets.only(top : 10.0),
-                  child : Column(
-                    children: [
-                      Padding(
-                        padding : const EdgeInsets.only(bottom: 10.0),
-                        child : Row(
-                          mainAxisAlignment : MainAxisAlignment.center,
-                          children: [for (int index = 0 ; index < model.numberBudgets ; ++index )
-                            budgetSelector(index)
-                          ],
-                        )
-                      ),
-                      GestureDetector(
-                        child : BudgetQuickViewView(model.currentBudget()),
-                        onTap: () {
-                        },
-                        onHorizontalDragEnd: (DragEndDetails ded){
-                          model.budgetSwipe(ded.primaryVelocity!);
-                          setState(() {});
-                        },
-                      ),
-                      const Divider(),
-                      Expanded(
-                          child : ListView(
-                            children: model.viewEntries.map((e) => EntryListTile(entry: e)).toList(),
+              Visibility(
+                visible: true, //!model.adding,
+                child:
+                Stack(
+                children :[
+                Padding(
+                    padding : const EdgeInsets.only(top : 10.0),
+                    child : Column(
+                      children: [
+                        Padding(
+                          padding : const EdgeInsets.only(bottom: 10.0),
+                          child : Row(
+                            mainAxisAlignment : MainAxisAlignment.center,
+                            children: [for (int index = 0 ; index < model.numberBudgets ; ++index )
+                              budgetSelector(index)
+                            ],
                           )
-                      )
-                    ],
-                  )
-              ),
-              Positioned(
-                right: 25,
-                bottom : 25,
-                width: 70,
-                height: 70,
-                child: FloatingActionButton(
-                  onPressed: () async {
-                    modelData = model.quickAddButton().then((value) => model.getViewData());
-                    setState(() {});
-                    },
-                  backgroundColor: Colors.green,
-                  child: const Icon(Icons.add_rounded, size: 50, ),
+                        ),
+                        GestureDetector(
+                          child : BudgetQuickViewView(model.currentBudget(), model.detailedBudgetView),
+                          onTap: () {
+                            //TODO : tapping on budget does something?
+                            model.detailedBudgetView = !model.detailedBudgetView;
+                            setState(() {});
+                          },
+                          onHorizontalDragEnd: (DragEndDetails ded){
+                            model.budgetSwipe(ded.primaryVelocity!);
+                            setState(() {});
+                          },
+                        ),
+                        const Divider(),
+                        Expanded(
+                            child : ListView(
+                              children: model.viewEntries.map((e) => EntryListTile(entry: e)).toList(),
+                            )
+                        )
+                      ],
+                    )
                 ),
+                Positioned(
+                  right: 25,
+                  bottom : 25,
+                  width: 70,
+                  height: 70,
+                  child: FloatingActionButton(
+                    onPressed: () async {
+                      modelData = model.quickAddButton();
+                      setState(() {});
+                      },
+                    backgroundColor: Colors.green,
+                    child: const Icon(Icons.add_rounded, size: 50, ),
+
+                  ),
+                )
+              ]
               )
+              )
+            ,
+            Stack(
+            children :[
+                Visibility(
+                  visible: model.adding,
+                  child:
+                    GestureDetector(
+                      onTap: () async {
+                        await model.adderFinished();
+                      }
+                    )
+                )
+                ,
+                Padding(
+                  padding: const EdgeInsets.all(50.0),
+                  child :
+                    Visibility(
+                      visible: model.adding,
+                      child:
+                          Container(
+                              padding: const EdgeInsets.all(20.0),
+                              decoration: const BoxDecoration(
+                                  color : Colors.white,
+                                  borderRadius: BorderRadius.all(Radius.circular(30.0))),
+                              child : EntryAdderQuickviewWidget(model)
+                          ),
+                        ),
+                )
+            ]
+            )
             ],
           ) ;
 

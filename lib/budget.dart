@@ -36,6 +36,11 @@ class BudgetBuilder{
     return Budget(name!,0,[],DateTime.now());
   }
 
+  BudgetBuilder setName(String newName){
+    name = newName;
+    return this;
+  }
+
   bool isValid(){
     return name != null;
   }

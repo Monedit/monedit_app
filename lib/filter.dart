@@ -38,16 +38,16 @@ class Filter{
     if(dateFilter != null){//TODO : this could be a function
       if(dateFilter!.item2 != null){
         where += "date BETWEEN ? AND ? ";
-        whereArgs.addAll([dateFilter!.item1,dateFilter!.item2!]);
+        whereArgs.addAll([dateFilter!.item1.toIso8601String(),dateFilter!.item2!.toIso8601String()]);
         //return here in the function
       }else{//get rid of this
         where += "date = ?";
-        whereArgs.add(dateFilter!.item1);
+        whereArgs.add(dateFilter!.item1.toIso8601String());
         //return here in the function
       }
 
     }
-    if(where == ''){
+    if(where == ''){ //TODO : query should not end with 'AND'
       return const Tuple2(null, null);
     }
     return Tuple2(where, whereArgs);
