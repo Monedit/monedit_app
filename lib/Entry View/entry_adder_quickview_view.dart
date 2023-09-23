@@ -117,7 +117,7 @@ class _EntryAdderQuickviewWidgetState extends State<EntryAdderQuickviewWidget>{
             },
           ),
           DropdownButton(
-            items: CategoryManager.nameToIconTable.keys.toList().map((str) => DropdownMenuItem(value : str, child: Text(str))).toList(), //TODO : Make the Category show logo and text
+            items: CategoryManager.getIconTable().keys.toList().map((str) => DropdownMenuItem(value : str, child: Text(str))).toList(), //TODO : Make the Category show logo and text
             onChanged: (String? selected){
               model!.categoryChange(selected!);
               setState(() {});

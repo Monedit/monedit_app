@@ -26,7 +26,7 @@ class EntryListTile extends StatelessWidget{
               "${entry.date.day.toString()}/${entry.date.month}/${entry.date.year} , ${entry.date.hour}:${entry.date.minute}", style: subtitleStyle)],
         ),
       //  isThreeLine: true,
-        leading: CategoryManager.nameToIconTable[entry.category], //fill with ICON of the Category
+        leading: CategoryManager.getIcon(entry.category), //fill with ICON of the Category
       //  dense:true,
         //onTap: ,
         //onLongPress: ,

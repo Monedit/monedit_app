@@ -92,7 +92,7 @@ class _EntryAdderWidgetState extends State<EntryAdderWidget>{
             model.valueChange(v);
             setState(() => {});
           },
-          keyboardType: const TextInputType.numberWithOptions(decimal: true,signed: true),
+          keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
           inputFormatters: [
             FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
           ],
@@ -105,7 +105,14 @@ class _EntryAdderWidgetState extends State<EntryAdderWidget>{
           },
         ),
         DropdownButton(
-            items: CategoryManager.nameToIconTable.keys.toList().map((str) => DropdownMenuItem(value : str, child: Text(str))).toList(), //TODO : Make the Category show logo and text
+            items: CategoryManager.getIconTable().keys.toList().map((str) => DropdownMenuItem(value : str,
+
+                child: SizedBox( width: 160, child: ListTile(
+                  leading: CategoryManager.getIcon(str),
+                    title: Text( str ),
+                ))
+
+            )).toList(), //TODO : Make the Category show logo and text
             onChanged: (String? selected){
               model.categoryChange(selected!);
               setState(() {});
@@ -116,7 +123,6 @@ class _EntryAdderWidgetState extends State<EntryAdderWidget>{
           onPressed: () async {
               print(await model.add());
               setState(() {});
-              //TODO : need to go back to previous view
           },
           label : const Text("Add Entry"),
           backgroundColor: Colors.green,

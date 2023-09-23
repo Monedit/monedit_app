@@ -33,6 +33,18 @@ class BudgetQuickViewView extends StatelessWidget{
     List<Widget> ls = [];
     double currBalance = 0.0;
 
+    if(stats.balanceByCategory.isEmpty){
+      ls.add(
+          CircularPercentIndicator(
+            radius:  !detailed ? 150.0 : 100.0 ,
+            lineWidth: 15.0,
+            percent: 0.0,
+            center: circleCenter(currBalance),
+            progressColor: Colors.black,
+            backgroundColor: Colors.transparent,
+          )
+      );
+    }
 
     stats.balanceByCategory.forEach((key, value) {
       ls.add(
@@ -41,7 +53,7 @@ class BudgetQuickViewView extends StatelessWidget{
           lineWidth: 15.0,
           percent: (currBalance+value)/budget.balance,
           center: circleCenter(currBalance),
-          progressColor: CategoryManager.nameToColorTable[key],
+          progressColor: CategoryManager.getColor(key),
           backgroundColor: Colors.transparent,
         )
       );
@@ -59,7 +71,7 @@ class BudgetQuickViewView extends StatelessWidget{
     stats.balanceByCategory.forEach((key, value) {
       ls.add(
               ListTile(
-                leading: CategoryManager.nameToIconTable[key],
+                leading: CategoryManager.getIcon(key),
                 title : Text( "${(100*value/budget.balance).toStringAsFixed(2)}%" , style : subtitleStyle )
               )
       );

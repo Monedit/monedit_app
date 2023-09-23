@@ -12,7 +12,6 @@ class BudgetStats{
       var db = await MoneditDatabase.get();
       var entries = await db.fetchEntriesById(budget.entriesIds);
 
-
       for ( var e in entries ) {
         balanceByCategory.update(e.category,
                 (prevBalance) => prevBalance + e.value,
